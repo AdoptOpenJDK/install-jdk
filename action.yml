@@ -1,0 +1,30 @@
+name: 'Install JDK'
+description: 'Set up a specific version of the Java JDK for use during an workflow.'
+inputs:
+  version:
+    description: 'The JDK version to setup.'
+    required: true
+  architecture:
+    description: 'The architecture (x86, x64) of the JDK. (This not relevant when an explicit source is specified.)'
+    required: false
+    default: 'x64'
+  source:
+    description: 'A custom JDK location. May either be a local archive, folder, or URL.'
+    required: false
+  archiveExtension:
+    description: 'The extension of the JDK archive. Must be one of: [.zip, .tar, .7z] (Required when source is an URL.)'
+    required: false
+  targets:
+    description: 'A semicolon-separated list of environment variables that should point to the JDK. (Defaults to "JAVA_HOME".)'
+    required: false
+    default: 'JAVA_HOME'
+  impl:
+    description: 'JVM implementation'
+    required: false
+    default: 'hotspot'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
+branding:
+  color: white
+  icon: download

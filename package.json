@@ -1,0 +1,50 @@
+{
+  "name": "install-jdk",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "lib/install-jdk.js",
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier --write **/*.ts",
+    "format-check": "prettier --check **/*.ts",
+    "release": "ncc build && git add -f dist/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheMrMilchmann/install-jdk.git"
+  },
+  "keywords": [
+    "actions",
+    "node",
+    "install",
+    "jdk"
+  ],
+  "author": "Leon Linhart",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.0.0",
+    "@actions/exec": "^1.0.0",
+    "@actions/io": "^1.0.0",
+    "@actions/tool-cache": "^1.0.0",
+    "semver": "^6.1.1",
+    "typed-rest-client": "1.5.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "@types/node": "^12.0.4",
+    "@types/semver": "^6.0.0",
+    "@zeit/ncc": "^0.20.5",
+    "jest": "^24.8.0",
+    "jest-circus": "^24.7.1",
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.1"
+  },
+  "husky": {
+    "skipCI": true,
+    "hooks": {
+      "pre-commit": "npm run build && npm run format"
+    }
+  }
+}
