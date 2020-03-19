@@ -3988,6 +3988,7 @@ function installJDK(version, arch, source, archiveExtension, targets, impl) {
                 core.addPath(path.join(toolPath, "bin"));
             core.exportVariable(value, toolPath);
         });
+        core.exportVariable("TEST_JDK_HOME", toolPath);
     });
 }
 exports.installJDK = installJDK;

@@ -84,6 +84,7 @@ export async function installJDK(
         if (value == "JAVA_HOME") core.addPath(path.join(toolPath, "bin"));
         core.exportVariable(value, toolPath);
     });
+    core.exportVariable("TEST_JDK_HOME", toolPath);
 }
 
 function getNormalizedCompressedFileExtension(file: string): string {
