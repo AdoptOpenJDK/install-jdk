@@ -18,7 +18,7 @@ See [action.yml](action.yml)
 ```
 steps:
 - uses: actions/checkout@v1
-- uses: AdopOpenJDK/install-jdk@v1
+- uses: AdoptOpenJDK/install-jdk@v1
   with:
     version: '13'
     architecture: x64
@@ -30,12 +30,11 @@ Some projects may require multiple JDK versions to build. `install-jdk` supports
 installing JDKs to one (or more) given `target` environment variables.
 
 ```
-- uses: actions/checkout@v1
-- uses: AdopOpenJDK/install-jdk@v1
+- uses: AdoptOpenJDK/install-jdk@v1
   with:
     version: '8'
     architecture: x64
-- uses: AdopOpenJDK/install-jdk@v1
+- uses: AdoptOpenJDK/install-jdk@v1
   with:
     version: '13'
     architecture: x64
@@ -52,7 +51,7 @@ installing JDKs to one (or more) given `target` environment variables.
 | `source`           |             |
 | `archiveExtension` |             |
 | `targets`          | `JAVA_HOME` |
-| `impl   `          | `hotspot`    |
+| `impl`             | `hotspot`   |
 
 #### `version`
 
@@ -96,5 +95,4 @@ from - say - `JDK_X` and `JAVA_HOME`, you would need to specify:
 
 #### `impl`
 
-JVM implementation. (Supported values is `hotspot`, `openj9`)
-
+JVM implementation. (Supported values are: `hotspot`, `openj9`)
