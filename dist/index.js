@@ -3945,7 +3945,7 @@ if (!tempDirectory) {
 }
 function installJDK(version, arch, source, archiveExtension, targets, impl) {
     return __awaiter(this, void 0, void 0, function* () {
-        const cacheEntry = `jdk-${version}`; // Trick the caching system for more flexibility
+        const cacheEntry = `jdk-${version}-${impl}`; // Trick the caching system for more flexibility
         let toolPath = tc.find(cacheEntry, "1.0.0", arch);
         if (toolPath) {
             core.debug(`JDK found in cache: ${toolPath}`);

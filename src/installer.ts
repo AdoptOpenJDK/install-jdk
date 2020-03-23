@@ -33,7 +33,7 @@ export async function installJDK(
     targets: string,
     impl: string
 ): Promise<void> {
-    const cacheEntry = `jdk-${version}`; // Trick the caching system for more flexibility
+    const cacheEntry = `jdk-${version}-${impl}`; // Trick the caching system for more flexibility
     let toolPath = tc.find(cacheEntry, "1.0.0", arch);
 
     if (toolPath) {
