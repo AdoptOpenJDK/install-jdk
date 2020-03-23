@@ -21,6 +21,7 @@ async function run() {
         if (!arch) arch = "x64";
         if (!targets) targets = "JAVA_HOME";
         if (!impl) impl = 'hotspot';
+        if (!source) source = 'releases';
 
         await installer.installJDK(version, arch, source, archiveExtension, targets, impl);
 

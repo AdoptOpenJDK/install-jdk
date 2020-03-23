@@ -9,8 +9,9 @@ inputs:
     required: false
     default: 'x64'
   source:
-    description: 'A custom JDK location. May either be a local archive, folder, or URL.'
+    description: 'A custom JDK location. May either be [nightly, releases(default)] from AdoptOpenJDK or be a local archive, folder.'
     required: false
+    default: 'releases'
   archiveExtension:
     description: 'The extension of the JDK archive. Must be one of: [.zip, .tar, .7z] (Required when source is an URL.)'
     required: false

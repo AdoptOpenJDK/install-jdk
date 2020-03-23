@@ -49,7 +49,7 @@ installing JDKs to one (or more) given `target` environment variables.
 |--------------------|-------------|
 | `version`          |             |
 | `architecture`     | `x64`       |
-| `source`           |             |
+| `source`           |  `release`           |
 | `archiveExtension` |             |
 | `targets`          | `JAVA_HOME` |
 | `impl   `          | `hotspot`    |
@@ -74,8 +74,10 @@ Defaults to `x64`.
 
 #### `source`
 
-A custom source location of a JDK. This might be either a local directory,
+JDK source location. It could be [releases, nightly] builds from AdoptOpenJDK. This might also be a local directory,
 a compressed file, or an url.
+
+Defaults to `releases` : download from AdoptOpenJDK
 
 #### `archiveExtension`
 

@@ -43,31 +43,28 @@ export async function installJDK(
         let jdkDir;
         let compressedFileExtension;
 
-        if (source) {
-            core.debug(`Attempting to use JDK from source: ${source}`);
+        core.debug(`Attempting to use JDK from source: ${source}`);
 
-            /*
-             * Source could refer to
-             * - an URL (discovered by http or https protocol prefix),
-             * - a directory, or
-             * - an archive file
-             */
-            if (source.startsWith("http://") || source.startsWith("https://")) {
-                if (!archiveExtension) core.error("archiveExtension must be set explicitly when source is an URL");
-
-                core.debug(`Downloading JDK from explicit source: ${source}`);
-                jdkFile = await tc.downloadTool(source);
-                compressedFileExtension = archiveExtension;
-            } else {
-                jdkFile = source;
-            }
-        } else {
+        /*
+        * Source could refer to
+        * - an URL (discovered by http or https protocol prefix),
+        * - a directory, or
+        * - an archive file
+        */
+        if (source === 'nightly' || source ==='releases') {
             core.debug("Downloading JDK from AdoptOpenJDK");
-            jdkFile = await tc.downloadTool(`https://api.adoptopenjdk.net/v3/binary/latest/${normalize(version)}/ga/${OS}/${arch}/jdk/${impl}/normal/adoptopenjdk`);
-
+            let release_type="ga";
+		    if (source ==='nightly') release_type="ea";
+		    jdkFile = await tc.downloadTool(`https://api.adoptopenjdk.net/v3/binary/latest/${normalize(version)}/${release_type}/${OS}/${arch}/jdk/${impl}/normal/adoptopenjdk`);
             compressedFileExtension = archiveExtension || IS_WINDOWS ? ".zip" : ".tar";
+        } else if (source.startsWith("http://") || source.startsWith("https://")) {
+            if (!archiveExtension) core.error("archiveExtension must be set explicitly when source is an URL");
+            core.debug(`Downloading JDK from explicit source: ${source}`);
+            jdkFile = await tc.downloadTool(source);
+            compressedFileExtension = archiveExtension;
+        } else {
+                jdkFile = source;
         }
-
         compressedFileExtension = compressedFileExtension || getNormalizedCompressedFileExtension(jdkFile);
 
         let tempDir: string = path.join(tempDirectory, "temp_" + Math.floor(Math.random() * 2000000000));

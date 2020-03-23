@@ -3164,6 +3164,8 @@ function run() {
                 targets = "JAVA_HOME";
             if (!impl)
                 impl = 'hotspot';
+            if (!source)
+                source = 'releases';
             yield installer.installJDK(version, arch, source, archiveExtension, targets, impl);
             //        const matchersPath = path.join(__dirname, '..', '.github');
             //        console.log(`##[add-matcher]${path.join(matchersPath, 'java.json')}`);
@@ -3954,29 +3956,30 @@ function installJDK(version, arch, source, archiveExtension, targets, impl) {
             let jdkFile;
             let jdkDir;
             let compressedFileExtension;
-            if (source) {
-                core.debug(`Attempting to use JDK from source: ${source}`);
-                /*
-                 * Source could refer to
-                 * - an URL (discovered by http or https protocol prefix),
-                 * - a directory, or
-                 * - an archive file
-                 */
-                if (source.startsWith("http://") || source.startsWith("https://")) {
-                    if (!archiveExtension)
-                        core.error("archiveExtension must be set explicitly when source is an URL");
-                    core.debug(`Downloading JDK from explicit source: ${source}`);
-                    jdkFile = yield tc.downloadTool(source);
-                    compressedFileExtension = archiveExtension;
-                }
-                else {
-                    jdkFile = source;
-                }
+            core.debug(`Attempting to use JDK from source: ${source}`);
+            /*
+            * Source could refer to
+            * - an URL (discovered by http or https protocol prefix),
+            * - a directory, or
+            * - an archive file
+            */
+            if (source === 'nightly' || source === 'releases') {
+                core.debug("Downloading JDK from AdoptOpenJDK");
+                let release_type = "ga";
+                if (source === 'nightly')
+                    release_type = "ea";
+                jdkFile = yield tc.downloadTool(`https://api.adoptopenjdk.net/v3/binary/latest/${normalize(version)}/${release_type}/${OS}/${arch}/jdk/${impl}/normal/adoptopenjdk`);
+                compressedFileExtension = archiveExtension || IS_WINDOWS ? ".zip" : ".tar";
+            }
+            else if (source.startsWith("http://") || source.startsWith("https://")) {
+                if (!archiveExtension)
+                    core.error("archiveExtension must be set explicitly when source is an URL");
+                core.debug(`Downloading JDK from explicit source: ${source}`);
+                jdkFile = yield tc.downloadTool(source);
+                compressedFileExtension = archiveExtension;
             }
             else {
-                core.debug("Downloading JDK from AdoptOpenJDK");
-                jdkFile = yield tc.downloadTool(`https://api.adoptopenjdk.net/v3/binary/latest/${normalize(version)}/ga/${OS}/${arch}/jdk/${impl}/normal/adoptopenjdk`);
-                compressedFileExtension = archiveExtension || IS_WINDOWS ? ".zip" : ".tar";
+                jdkFile = source;
             }
             compressedFileExtension = compressedFileExtension || getNormalizedCompressedFileExtension(jdkFile);
             let tempDir = path.join(tempDirectory, "temp_" + Math.floor(Math.random() * 2000000000));
