@@ -3150,6 +3150,8 @@ function run() {
             let arch = core.getInput("architecture", { required: false });
             let source = core.getInput("source", { required: false });
             let impl = core.getInput("impl", { required: false });
+            let archiveBasePath = core.getInput("archiveBasePath", { required: false });
+            let useArchiveBasePath = core.getInput("useArchiveBasePath", { required: false }) != "false";
             let archiveExtension = core.getInput("archiveExtension", { required: false });
             if (archiveExtension
                 && archiveExtension != ".zip"
@@ -3164,7 +3166,7 @@ function run() {
                 targets = "JAVA_HOME";
             if (!impl)
                 impl = 'hotspot';
-            yield installer.installJDK(version, arch, source, archiveExtension, targets, impl);
+            yield installer.installJDK(version, arch, source, archiveBasePath, useArchiveBasePath, archiveExtension, targets, impl);
             //        const matchersPath = path.join(__dirname, '..', '.github');
             //        console.log(`##[add-matcher]${path.join(matchersPath, 'java.json')}`);
         }
@@ -3943,7 +3945,7 @@ if (!tempDirectory) {
     }
     tempDirectory = path.join(baseLocation, "actions", "temp");
 }
-function installJDK(version, arch, source, archiveExtension, targets, impl) {
+function installJDK(version, arch, source, archiveBasePath, useArchiveBasePath, archiveExtension, targets, impl) {
     return __awaiter(this, void 0, void 0, function* () {
         const cacheEntry = `jdk-${version}-${impl}`; // Trick the caching system for more flexibility
         let toolPath = tc.find(cacheEntry, "1.0.0", arch);
@@ -3951,6 +3953,12 @@ function installJDK(version, arch, source, archiveExtension, targets, impl) {
             core.debug(`JDK found in cache: ${toolPath}`);
         }
         else {
+            /*
+             * The archiveBasePath is set by default on macOS only, to support OpenJDK builds from Oracle, and OpenJDK and
+             * OpenJ9 builds from AdoptOpenJDK (the default source of builds used by install-jdk).
+             */
+            if (useArchiveBasePath && !archiveBasePath && OS === "mac")
+                archiveBasePath = "/Contents/Home/";
             let jdkFile;
             let jdkDir;
             let compressedFileExtension;
@@ -3980,7 +3988,7 @@ function installJDK(version, arch, source, archiveExtension, targets, impl) {
             }
             compressedFileExtension = compressedFileExtension || getNormalizedCompressedFileExtension(jdkFile);
             let tempDir = path.join(tempDirectory, "temp_" + Math.floor(Math.random() * 2000000000));
-            jdkDir = yield decompressArchive(jdkFile, compressedFileExtension, tempDir);
+            jdkDir = yield decompressArchive(jdkFile, compressedFileExtension, archiveBasePath, useArchiveBasePath, tempDir);
             toolPath = yield tc.cacheDir(jdkDir, cacheEntry, "1.0.0", arch);
         }
         targets.split(";").forEach(function (value) {
@@ -4002,14 +4010,16 @@ function getNormalizedCompressedFileExtension(file) {
         return ".7z";
     }
 }
-function decompressArchive(repoRoot, fileEnding, destinationFolder) {
+function decompressArchive(repoRoot, fileEnding, archiveBasePath, useArchiveBasePath, destinationFolder) {
     return __awaiter(this, void 0, void 0, function* () {
         yield io.mkdirP(destinationFolder);
         const jdkFile = path.normalize(repoRoot);
         const stats = fs.statSync(jdkFile);
         if (stats.isFile()) {
             yield extractFiles(jdkFile, fileEnding, destinationFolder);
-            const jdkDirectory = path.join(destinationFolder, fs.readdirSync(destinationFolder)[0]);
+            let jdkDirectory = path.join(destinationFolder, fs.readdirSync(destinationFolder)[0]);
+            if (useArchiveBasePath && archiveBasePath)
+                jdkDirectory = path.join(jdkDirectory, archiveBasePath);
             yield unpackJars(jdkDirectory, path.join(jdkDirectory, "bin"));
             return jdkDirectory;
         }

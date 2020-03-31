@@ -29,6 +29,8 @@ export async function installJDK(
     version: string,
     arch: string,
     source: string,
+    archiveBasePath: string,
+    useArchiveBasePath: boolean,
     archiveExtension: string,
     targets: string,
     impl: string
@@ -37,8 +39,14 @@ export async function installJDK(
     let toolPath = tc.find(cacheEntry, "1.0.0", arch);
 
     if (toolPath) {
-        core.debug(`JDK found in cache: ${toolPath}`)
+        core.debug(`JDK found in cache: ${toolPath}`);
     } else {
+        /*
+         * The archiveBasePath is set by default on macOS only, to support OpenJDK builds from Oracle, and OpenJDK and
+         * OpenJ9 builds from AdoptOpenJDK (the default source of builds used by install-jdk).
+         */
+        if (useArchiveBasePath && !archiveBasePath && OS === "mac") archiveBasePath = "/Contents/Home/";
+
         let jdkFile;
         let jdkDir;
         let compressedFileExtension;
@@ -71,7 +79,7 @@ export async function installJDK(
         compressedFileExtension = compressedFileExtension || getNormalizedCompressedFileExtension(jdkFile);
 
         let tempDir: string = path.join(tempDirectory, "temp_" + Math.floor(Math.random() * 2000000000));
-        jdkDir = await decompressArchive(jdkFile, compressedFileExtension, tempDir);
+        jdkDir = await decompressArchive(jdkFile, compressedFileExtension, archiveBasePath, useArchiveBasePath, tempDir);
         toolPath = await tc.cacheDir(
             jdkDir,
             cacheEntry,
@@ -99,6 +107,8 @@ function getNormalizedCompressedFileExtension(file: string): string {
 async function decompressArchive(
     repoRoot: string,
     fileEnding: string,
+    archiveBasePath: string,
+    useArchiveBasePath: boolean,
     destinationFolder: string
 ): Promise<string> {
     await io.mkdirP(destinationFolder);
@@ -109,12 +119,14 @@ async function decompressArchive(
     if (stats.isFile()) {
         await extractFiles(jdkFile, fileEnding, destinationFolder);
 
-        const jdkDirectory = path.join(destinationFolder, fs.readdirSync(destinationFolder)[0]);
+        let jdkDirectory = path.join(destinationFolder, fs.readdirSync(destinationFolder)[0]);
+        if (useArchiveBasePath && archiveBasePath) jdkDirectory = path.join(jdkDirectory, archiveBasePath);
+
         await unpackJars(jdkDirectory, path.join(jdkDirectory, "bin"));
 
         return jdkDirectory;
     } else if (stats.isDirectory()) {
-        return jdkFile
+        return jdkFile;
     } else {
         throw new Error(`Argument is neither a directory, nor a supported archive: ${jdkFile}`);
     }

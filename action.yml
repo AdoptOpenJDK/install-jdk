@@ -11,6 +11,12 @@ inputs:
   source:
     description: 'A custom JDK location. May either be a local archive, folder, or URL.'
     required: false
+  archiveBasePath:
+    description: 'A slash-separated path pointing to the JDK relative from a single top-level folder within the archive.'
+    required: false
+  useArchiveBasePath:
+    description: 'A boolean value ("true" or "false") on whether the archiveBasePath property should be used.'
+    required: false
   archiveExtension:
     description: 'The extension of the JDK archive. Must be one of: [.zip, .tar, .7z] (Required when source is an URL.)'
     required: false

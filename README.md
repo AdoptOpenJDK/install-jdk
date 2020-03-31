@@ -44,14 +44,16 @@ installing JDKs to one (or more) given `target` environment variables.
 
 ### Configuration:
 
-| Parameter          | Default     |
-|--------------------|-------------|
-| `version`          |             |
-| `architecture`     | `x64`       |
-| `source`           |             |
-| `archiveExtension` |             |
-| `targets`          | `JAVA_HOME` |
-| `impl`             | `hotspot`   |
+| Parameter            | Default                        |
+|----------------------|--------------------------------|
+| `version`            |                                |
+| `architecture`       | `x64`                          |
+| `source`             |                                |
+| `archiveBasePath`    | `/Contents/Home/` (macOS only) |
+| `useArchiveBasePath` | `true`                         |
+| `archiveExtension`   |                                |
+| `targets`            | `JAVA_HOME`                    |
+| `impl   `            | `hotspot`                      |
 
 #### `version`
 
@@ -75,6 +77,28 @@ Defaults to `x64`.
 
 A custom source location of a JDK. This might be either a local directory,
 a compressed file, or an url.
+
+#### `archiveBasePath`
+
+install-jdk expects a single top-level folder in archive packages. This property
+may be used to specify the subdirectory of said folder in which the JDK resides.
+This must be empty, or a `/`-separated path.
+
+By default, this property is set to `/Contents/Home/` on macOS only to support
+OpenJDK builds from Oracle, and OpenJDK and OpenJ9 builds from AdoptOpenJDK
+out of the box.
+
+When using builds from other sources, it may be necessary to disable use of this
+property since the action cannot differentiate between empty and unspecified
+parameters. (See `useArchiveBasePath`.)
+
+#### `useArchiveBasePath`
+
+Disables use of the `archiveBasePath` property. This must be a boolean value.
+
+Build archives from custom other may have different directory structures for
+which the default configuration would fail.
+E.g.: For Azul's Zulu builds it should be set to false (`useArchiveBasePath : 'false'`).
 
 #### `archiveExtension`
 

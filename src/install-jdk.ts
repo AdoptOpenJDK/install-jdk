@@ -8,6 +8,9 @@ async function run() {
         let source = core.getInput("source", { required: false });
         let impl = core.getInput("impl", { required: false });
 
+        let archiveBasePath = core.getInput("archiveBasePath", { required: false });
+        let useArchiveBasePath = core.getInput("useArchiveBasePath", { required: false }) != "false";
+
         let archiveExtension = core.getInput("archiveExtension", { required: false });
         if (archiveExtension
             && archiveExtension != ".zip"
@@ -22,7 +25,7 @@ async function run() {
         if (!targets) targets = "JAVA_HOME";
         if (!impl) impl = 'hotspot';
 
-        await installer.installJDK(version, arch, source, archiveExtension, targets, impl);
+        await installer.installJDK(version, arch, source, archiveBasePath, useArchiveBasePath, archiveExtension, targets, impl);
 
 //        const matchersPath = path.join(__dirname, '..', '.github');
 //        console.log(`##[add-matcher]${path.join(matchersPath, 'java.json')}`);
