@@ -18,6 +18,7 @@ let javaArchiveExtension = "";
 const archiveBasePath = "";
 const useArchiveBasePath = true;
 const jdkImpl = "hotspot";
+const sourceType = "";
 
 if (process.platform === "win32") {
     javaFilePath = path.join(javaDir, "java_win.zip");
@@ -58,7 +59,7 @@ describe("installer tests", () => {
     }, 100000);
 
     it("Installs version of Java from jdkFile if no matching version is installed", async () => {
-        await installer.installJDK("12", "x64", javaFilePath, archiveBasePath, useArchiveBasePath, javaArchiveExtension, "JAVA_HOME", jdkImpl);
+        await installer.installJDK("12", "x64", javaFilePath, sourceType, archiveBasePath, useArchiveBasePath, javaArchiveExtension, "JAVA_HOME", jdkImpl);
         const JavaDir = path.join(toolDir, `jdk-12-${jdkImpl}`, "1.0.0", "x64");
 
         expect(fs.existsSync(`${JavaDir}.complete`)).toBe(true);
@@ -68,7 +69,7 @@ describe("installer tests", () => {
     it("Throws if invalid directory to jdk", async () => {
         let thrown = false;
         try {
-            await installer.installJDK("1000", "x64", "bad path", archiveBasePath, useArchiveBasePath, ".zip", "JAVA_HOME", jdkImpl);
+            await installer.installJDK("1000", "x64", "bad path", sourceType, archiveBasePath, useArchiveBasePath, ".zip", "JAVA_HOME", jdkImpl);
         } catch {
             thrown = true;
         }
@@ -76,7 +77,7 @@ describe("installer tests", () => {
     });
 
     it("Downloads java if no file given", async () => {
-        await installer.installJDK("8", "x64", "", archiveBasePath, useArchiveBasePath, "", "JAVA_HOME", jdkImpl);
+        await installer.installJDK("8", "x64", "releases", sourceType, archiveBasePath, useArchiveBasePath, "", "JAVA_HOME", jdkImpl);
         const JavaDir = path.join(toolDir, `jdk-8-${jdkImpl}`, "1.0.0", "x64");
 
         expect(fs.existsSync(`${JavaDir}.complete`)).toBe(true);
@@ -84,7 +85,7 @@ describe("installer tests", () => {
     }, 100000);
 
     it("Downloads java with 1.x syntax", async () => {
-        await installer.installJDK("1.8", "x64", "", archiveBasePath, useArchiveBasePath, javaArchiveExtension, "JAVA_HOME", jdkImpl);
+        await installer.installJDK("1.8", "x64", "releases", sourceType, archiveBasePath, useArchiveBasePath, javaArchiveExtension, "JAVA_HOME", jdkImpl);
         const JavaDir = path.join(toolDir, `jdk-1.8-${jdkImpl}`, "1.0.0", "x64");
 
         expect(fs.existsSync(`${JavaDir}.complete`)).toBe(true);
@@ -104,7 +105,7 @@ describe("installer tests", () => {
     it("Throws if invalid directory to jdk", async () => {
         let thrown = false;
         try {
-            await installer.installJDK("1000", "x64", "bad path", archiveBasePath, useArchiveBasePath, "", "JAVA_HOME", jdkImpl);
+            await installer.installJDK("1000", "x64", "bad path", sourceType, archiveBasePath, useArchiveBasePath, "", "JAVA_HOME", jdkImpl);
         } catch {
             thrown = true;
         }
@@ -135,7 +136,7 @@ describe("installer tests", () => {
         let thrown = false;
         try {
             // This will throw if it doesn""t find it in the cache (because no such version exists)
-            await installer.installJDK("251", "x64", "bad path", archiveBasePath, useArchiveBasePath, "", "JAVA_HOME", jdkImpl);
+            await installer.installJDK("251", "x64", "bad path", sourceType, archiveBasePath, useArchiveBasePath, "", "JAVA_HOME", jdkImpl);
         } catch {
             thrown = true;
         }

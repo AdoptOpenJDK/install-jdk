@@ -29,6 +29,7 @@ export async function installJDK(
     version: string,
     arch: string,
     source: string,
+    sourceType: string,
     archiveBasePath: string,
     useArchiveBasePath: boolean,
     archiveExtension: string,
@@ -51,29 +52,53 @@ export async function installJDK(
         let jdkDir;
         let compressedFileExtension;
 
-        if (source) {
-            core.debug(`Attempting to use JDK from source: ${source}`);
-
-            /*
-             * Source could refer to
-             * - an URL (discovered by http or https protocol prefix),
-             * - a directory, or
-             * - an archive file
-             */
+        if (!sourceType) {
             if (source.startsWith("http://") || source.startsWith("https://")) {
-                if (!archiveExtension) core.error("archiveExtension must be set explicitly when source is an URL");
-
-                core.debug(`Downloading JDK from explicit source: ${source}`);
-                jdkFile = await tc.downloadTool(source);
-                compressedFileExtension = archiveExtension;
+                sourceType = "url";
+            } else if (source && fs.existsSync(source)) {
+                sourceType = "file";
             } else {
-                jdkFile = source;
+                sourceType = "buildType";
             }
-        } else {
-            core.debug("Downloading JDK from AdoptOpenJDK");
-            jdkFile = await tc.downloadTool(`https://api.adoptopenjdk.net/v3/binary/latest/${normalize(version)}/ga/${OS}/${arch}/jdk/${impl}/normal/adoptopenjdk`);
+        }
+
+        if (sourceType === "url") {
+            core.debug(`Attempting to use JDK from URL source: ${source}`);
+            if (!archiveExtension) core.error("archiveExtension must be set explicitly when source is an URL");
+
+            core.debug(`Downloading JDK from explicit source: ${source}`);
+
+            jdkFile = await tc.downloadTool(source);
+            compressedFileExtension = archiveExtension;
+        } else if (sourceType == "file") {
+            core.debug(`Attempting to use JDK from file source: ${source}`);
+
+            jdkFile = source;
+        } else if (sourceType === "buildType") {
+            if (!source) {
+                // This should be impossible since source defaults to "releases".
+                core.error("Source was not specified for buildType source");
+                return;
+            }
+
+            let buildType;
+
+            if (source === "releases") {
+                buildType = "ga";
+            } else if (source === "nightly") {
+                buildType = "ea";
+            } else {
+                core.debug(`Attempting to use unknown buildType source: '${source}'`);
+                buildType = source;
+            }
+
+            core.debug(`Downloading JDK from AdoptOpenJDK (${buildType})`);
+            jdkFile = await tc.downloadTool(`https://api.adoptopenjdk.net/v3/binary/latest/${normalize(version)}/${buildType}/${OS}/${arch}/jdk/${impl}/normal/adoptopenjdk`);
 
             compressedFileExtension = archiveExtension || IS_WINDOWS ? ".zip" : ".tar";
+        } else {
+            core.error(`Unsupported sourceType: '${sourceType}'`);
+            return;
         }
 
         compressedFileExtension = compressedFileExtension || getNormalizedCompressedFileExtension(jdkFile);
@@ -89,7 +114,7 @@ export async function installJDK(
     }
 
     targets.split(";").forEach(function (value) {
-        if (value == "JAVA_HOME") core.addPath(path.join(toolPath, "bin"));
+        if (value === "JAVA_HOME") core.addPath(path.join(toolPath, "bin"));
         core.exportVariable(value, toolPath);
     });
 }

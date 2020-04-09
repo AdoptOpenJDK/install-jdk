@@ -9,13 +9,17 @@ inputs:
     required: false
     default: 'x64'
   source:
-    description: 'A custom JDK location. May either be a local archive, folder, or URL.'
+    description: 'A custom JDK source. May either an url, a local archive or folder, or a build type ("nightly", or "releases").'
+    required: false
+    default: 'releases'
+  sourceType:
+    description: 'The type of the source parameter. Must be one of [buildType, url, file] or empty for automatic detection. '
     required: false
   archiveBasePath:
     description: 'A slash-separated path pointing to the JDK relative from a single top-level folder within the archive.'
     required: false
   useArchiveBasePath:
-    description: 'A boolean value ("true" or "false") on whether the archiveBasePath property should be used.'
+    description: 'A boolean value ("true" or "false") on whether the archiveBasePath parameter should be used.'
     required: false
   archiveExtension:
     description: 'The extension of the JDK archive. Must be one of: [.zip, .tar, .7z] (Required when source is an URL.)'

@@ -48,7 +48,8 @@ installing JDKs to one (or more) given `target` environment variables.
 |----------------------|--------------------------------|
 | `version`            |                                |
 | `architecture`       | `x64`                          |
-| `source`             |                                |
+| `source`             | `releases`                     |
+| `sourceType`         |                                |
 | `archiveBasePath`    | `/Contents/Home/` (macOS only) |
 | `useArchiveBasePath` | `true`                         |
 | `archiveExtension`   |                                |
@@ -75,8 +76,22 @@ Defaults to `x64`.
 
 #### `source`
 
-A custom source location of a JDK. This might be either a local directory,
-a compressed file, or an url.
+A custom source for a JDK. (See `sourceType` for supported values.)
+
+#### `sourceType`
+
+The type of the `source` parameter. Supported source types are:
+
+- `url` - HTTP and HTTPS URL sources
+- `file` - local directories, or compressed archives
+- `buildType` - AdoptOpenJDK build types ("nightly", or "releases".)
+
+The property may be set to empty, to automatically infer the type. The inferred
+type is:
+
+1. `url`, if `source` starts with "http://" or "https://",
+2. `file`, if `source` resembles a valid local file path and the file exists, 
+3. or `buildType` otherwise.
 
 #### `archiveBasePath`
 
