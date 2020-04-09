@@ -86,7 +86,7 @@ The type of the `source` parameter. Supported source types are:
 - `file` - local directories, or compressed archives
 - `buildType` - AdoptOpenJDK build types ("nightly", or "releases".)
 
-The property may be set to empty, to automatically infer the type. The inferred
+The parameter may be set to empty, to automatically infer the type. The inferred
 type is:
 
 1. `url`, if `source` starts with "http://" or "https://",
@@ -95,21 +95,21 @@ type is:
 
 #### `archiveBasePath`
 
-install-jdk expects a single top-level folder in archive packages. This property
-may be used to specify the subdirectory of said folder in which the JDK resides.
-This must be empty, or a `/`-separated path.
+install-jdk expects a single top-level folder in archive packages. This
+parameter may be used to specify the subdirectory of said folder in which the
+JDK resides. This must be empty, or a `/`-separated path.
 
-By default, this property is set to `/Contents/Home/` on macOS only to support
+By default, this parameter is set to `/Contents/Home/` on macOS only to support
 OpenJDK builds from Oracle, and OpenJDK and OpenJ9 builds from AdoptOpenJDK
 out of the box.
 
 When using builds from other sources, it may be necessary to disable use of this
-property since the action cannot differentiate between empty and unspecified
+parameter since the action cannot differentiate between empty and unspecified
 parameters. (See `useArchiveBasePath`.)
 
 #### `useArchiveBasePath`
 
-Disables use of the `archiveBasePath` property. This must be a boolean value.
+Disables use of the `archiveBasePath` parameter. This must be a boolean value.
 
 Build archives from custom other may have different directory structures for
 which the default configuration would fail.
@@ -119,7 +119,7 @@ E.g.: For Azul's Zulu builds it should be set to false (`useArchiveBasePath : 'f
 
 The extension of the JDK archive. (Supported values are: `.zip`, `.tar`, `.7z`)
 
-Specifying this property is required when a custom `source` is set.
+Specifying this parameter is required when a custom `source` is set.
 
 #### `targets`
 
