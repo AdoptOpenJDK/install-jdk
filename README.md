@@ -1,13 +1,12 @@
+*** This action is superseded by [actions/setup-java](https://github.com/actions/setup-java) ***
+
+*** THIS REPO IS THERFORE ARCHIVED ***
+
 # install-jdk
 
 An action to download and install JDKs for use in workflows.
 
-This action is based on the [actions/setup-java](https://github.com/actions/setup-java)
-action by GitHub which works perfectly fine for simple workflows but does not
-scale and lacks configurability.
-
 JDKs are downloaded from [AdoptOpenJDK](https://adoptopenjdk.net/).
-
 
 ## Usage
 
