@@ -1,6 +1,6 @@
-** This action is superseded by [actions/setup-java](https://github.com/actions/setup-java) **
+**This action is superseded by [actions/setup-java](https://github.com/actions/setup-java)**
 
-** THIS REPO IS THERFORE ARCHIVED **
+**THIS REPO IS THERFORE ARCHIVED**
 
 # install-jdk
 
